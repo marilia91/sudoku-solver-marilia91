@@ -1,28 +1,49 @@
-"""Arquivo principal do programa"""
+def solve_sudoku(board: list[list[int]]) -> list[list[int]]:
+    def resolve(board: list[list[int]]) -> bool:
+        i, j = célula_vazia(board)
+        if i == None or j == None:
+            return True 
 
-Board = list[list[int]]
+        for num in range(1, 10):
+            board[i][j] = num 
 
+            if is_valid(board) and resolve(board): 
+                return True
 
-def solve_sudoku(board: Board) -> Board:
-    """
-    Resolve um tabuleiro de sudoku.
-    O tabuleiro deve ser uma lista de listas de inteiros.
-    Cada lista interna representa uma linha do tabuleiro.
-    Os elementos devem ser inteiros entre 0 e 9.
-    Os zeros representam espaços vazios.
+            board[i][j] = 0 
 
-    """
-    return board
-
-
-def is_valid(board: Board) -> bool:
-    """
-    Checa se o tabuleiro é válido
-    Um tabuleiro válido é um tabuleiro com 9 linhas, 9 colunas e 9 quadrantes.
-    Todos os elementos devem ser inteiros entre 0 e 9.
-    Cada linha, coluna e quadrante deve conter apenas um elemento de cada valor.
-    O tabuleiro pode conter zeros, que representam espaços vazios.
-    """
-    if len(board) != 9:
         return False
+
+    if resolve(board):
+        return board
+    else:
+        raise ValueError
+
+def is_valid(board: list[list[int]]) -> bool:
+    for i in range(9):
+        for j in range(9):
+            num = board[i][j]
+            if num != 0:
+                for col in range(9):
+                    if col != j and board[i][col] == num:
+                        return False
+
+                for row in range(9):
+                    if row != i and board[row][j] == num:
+                        return False
+                start_row = 3 * (i // 3) 
+                start_col = 3 * (j // 3)
+                for row in range(start_row, start_row + 3):
+                    for col in range(start_col, start_col + 3):
+                        if (row != i or col != j) and board[row][col] == num:
+                            return False
+
     return True
+
+def célula_vazia(board: list[list[int]]) -> tuple[int, int]:
+
+    for i in range(9):
+        for j in range(9):
+            if board[i][j] == 0:
+                return i, j
+    return None, None
